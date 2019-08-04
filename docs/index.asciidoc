@@ -1,0 +1,5 @@
+= Earthquakebeat Docs
+
+Welcome to the Earthquakebeat documentation.
+
+

@@ -255,16 +255,264 @@ type: keyword
 [float]
 === earthquake
 
-Earthquake data
+Earthquake data. More: https://earthquake.usgs.gov/data/comcat/data-eventterms.php
 
 
+[float]
+=== geometry
 
-*`earthquake.safecastId`*::
+Earthquake geometry
+
+
+*`earthquake.geometry.depth`*::
 +
 --
-Original Safecast ID
+Depth of the event in kilometers.
+
+type: float
+
+--
+
+*`earthquake.geometry.location`*::
++
+--
+Location
+
+type: geo_point
+
+--
+
+[float]
+=== properties
+
+Earthquake properties
+
+
+*`earthquake.properties.mag`*::
++
+--
+The magnitude for the event.
+
+type: float
+
+--
+
+*`earthquake.properties.place`*::
++
+--
+Textual description of named geographic region near to the event. This may be a city name, or a Flinn-Engdahl Region name.
+
+type: text
+
+--
+
+*`earthquake.properties.time`*::
++
+--
+Time when the event occurred. Times are reported in milliseconds since the epoch ( 1970-01-01T00:00:00.000Z), and do not include leap seconds. In certain output formats, the date is formatted for readability.
+
+type: date
+
+--
+
+*`earthquake.properties.updated`*::
++
+--
+Time when the event was most recently updated. Times are reported in milliseconds since the epoch. In certain output formats, the date is formatted for readability.
+
+type: date
+
+--
+
+*`earthquake.properties.tz`*::
++
+--
+Timezone offset from UTC in minutes at the event epicenter.
 
 type: integer
+
+--
+
+*`earthquake.properties.url`*::
++
+--
+Link to USGS Event Page for event.
+
+type: text
+
+--
+
+*`earthquake.properties.detail`*::
++
+--
+Link to GeoJSON detail feed from a GeoJSON summary feed.
+
+type: text
+
+--
+
+*`earthquake.properties.felt`*::
++
+--
+The total number of felt reports submitted to the DYFI? system.
+
+type: integer
+
+--
+
+*`earthquake.properties.cdi`*::
++
+--
+The maximum reported intensity for the event. Computed by DYFI. While typically reported as a roman numeral, for the purposes of this API, intensity is expected as the decimal equivalent of the roman numeral. Learn more about magnitude vs. intensity.
+
+type: long
+
+--
+
+*`earthquake.properties.mmi`*::
++
+--
+The maximum estimated instrumental intensity for the event. Computed by ShakeMap. While typically reported as a roman numeral, for the purposes of this API, intensity is expected as the decimal equivalent of the roman numeral. Learn more about magnitude vs. intensity.
+
+type: long
+
+--
+
+*`earthquake.properties.alert`*::
++
+--
+Type of seismic event.
+
+type: keyword
+
+--
+
+*`earthquake.properties.status`*::
++
+--
+Indicates whether the event has been reviewed by a human.
+
+type: keyword
+
+--
+
+*`earthquake.properties.tsunami`*::
++
+--
+This flag is set to "1" for large events in oceanic regions and "0" otherwise. The existence or value of this flag does not indicate if a tsunami actually did or will exist. If the flag value is "1", the event will include a link to the NOAA Tsunami website for tsunami information. The USGS is not responsible for Tsunami warning; we are simply providing a link to the authoritative NOAA source.
+
+type: integer
+
+--
+
+*`earthquake.properties.sig`*::
++
+--
+A number describing how significant the event is. Larger numbers indicate a more significant event. This value is determined on a number of factors, including: magnitude, maximum MMI, felt reports, and estimated impact.
+
+type: integer
+
+--
+
+*`earthquake.properties.net`*::
++
+--
+The ID of a data contributor. Identifies the network considered to be the preferred source of information for this event.
+
+type: keyword
+
+--
+
+*`earthquake.properties.code`*::
++
+--
+An identifying code assigned by - and unique from - the corresponding source for the event.
+
+type: keyword
+
+--
+
+*`earthquake.properties.ids`*::
++
+--
+A comma-separated list of event ids that are associated to an event.
+
+--
+
+*`earthquake.properties.sources`*::
++
+--
+A comma-separated list of network contributors.
+
+--
+
+*`earthquake.properties.types`*::
++
+--
+A comma-separated list of product types associated to this event.
+
+--
+
+*`earthquake.properties.nst`*::
++
+--
+The total number of seismic stations used to determine earthquake location.
+
+type: integer
+
+--
+
+*`earthquake.properties.dmin`*::
++
+--
+Horizontal distance from the epicenter to the nearest station (in degrees). 1 degree is approximately 111.2 kilometers. In general, the smaller this number, the more reliable is the calculated depth of the earthquake.
+
+type: float
+
+--
+
+*`earthquake.properties.rms`*::
++
+--
+The root-mean-square (RMS) travel time residual, in sec, using all weights. This parameter provides a measure of the fit of the observed arrival times to the predicted arrival times for this location. Smaller numbers reflect a better fit of the data. The value is dependent on the accuracy of the velocity model used to compute the earthquake location, the quality weights assigned to the arrival time data, and the procedure used to locate the earthquake.
+
+type: float
+
+--
+
+*`earthquake.properties.gap`*::
++
+--
+The largest azimuthal gap between azimuthally adjacent stations (in degrees). In general, the smaller this number, the more reliable is the calculated horizontal position of the earthquake. Earthquake locations in which the azimuthal gap exceeds 180 degrees typically have large location and depth uncertainties.
+
+type: float
+
+--
+
+*`earthquake.properties.magType`*::
++
+--
+The method or algorithm used to calculate the preferred magnitude for the event.
+
+type: keyword
+
+--
+
+*`earthquake.properties.type`*::
++
+--
+Type of seismic event.
+
+type: keyword
+
+--
+
+*`earthquake.properties.title`*::
++
+--
+Title of the event.
+
+type: text
 
 --
 

@@ -34,6 +34,7 @@ func init() {
 	devtools.SetBuildVariableSources(devtools.DefaultBeatBuildVariableSources)
 
 	devtools.BeatDescription = "One sentence description of the Beat."
+	devtools.BeatVendor = "radoondas"
 }
 
 // Build builds the Beat binary.

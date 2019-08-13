@@ -7,8 +7,16 @@ import "time"
 
 type Config struct {
 	Period time.Duration `config:"period"`
+	SSL    SSL           `config:"ssl"`
+}
+
+type SSL struct {
+	CAfile string `config:"cafile"`
 }
 
 var DefaultConfig = Config{
-	Period: 1 * time.Minute,
+	Period: 5 * time.Minute,
+	SSL: SSL{
+		CAfile: "",
+	},
 }

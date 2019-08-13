@@ -4,4 +4,8 @@
 
 earthquakebeat:
   # Defines how often an event is sent to the output
-  period: 1m
+  period: 5m
+
+  # Defines SSL configuration.
+  ssl:
+    cafile: "/Users/rado/workspace/go/src/github.com/radoondas/safecastbeat/CA.pem"

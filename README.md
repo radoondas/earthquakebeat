@@ -2,115 +2,50 @@
 
 Welcome to Earthquakebeat.
 
-Ensure that this folder is at the following location:
-`${GOPATH}/src/github.com/radoondas/earthquakebeat`
+Earthquakebeat is a beat which periodically pulls data from [USGS earthquake API](https://earthquake.usgs.gov/fdsnws/event/1/). There are 2 api calls done eacr `Period` which request new and updated earthquakes. 
 
-## Getting Started with Earthquakebeat
+`New` earthquakes call will request data in GeoJSON format and use attribute `starttime` set to `Now-Period`. That meas beat will pull data from past X Period of time you define.
+Example `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-08-13T09%3A18%3A18
+`   
 
-### Requirements
+`Updated ` earthquakes does the same, except is uses attribute `updatedafter` to pull last updated data. 
+Example: `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-08-13T09%3A18%3A18`
 
-* [Golang](https://golang.org/dl/) 1.7
+All other attributes are default and earthquakes from all over the world are being pulled.
 
-### Init Project
-To get running with Earthquakebeat and also install the
-dependencies, run the following command:
+Note: Beat preserve earthquake original ID to not to duplicate data in index.
 
-```
-make setup
-```
 
-It will create a clean git history for each major step. Note that you can always rewrite the history if you wish before pushing your changes.
+## Installation
+Download and install appropriate package for your system. Check release [page](https://github.com/radoondas/earthquakebeat/releases) for latest packages.
 
-To push Earthquakebeat in the git repository, run the following commands:
+You also can use Docker image `docker pull radoondas/earthquakebeat:<version>`
 
-```
-git remote set-url origin https://github.com/radoondas/earthquakebeat
-git push origin master
-```
 
-For further development, check out the [beat developer guide](https://www.elastic.co/guide/en/beats/libbeat/current/new-beat.html).
+## Configuration
 
-### Build
+To run Earthquakebeat you have to define `Period` for data pull. 5m should be sufficient and beat will pull new and updated earthquakes from last 5 minutes.
 
-To build the binary for Earthquakebeat run the command below. This will generate a binary
-in the same directory with the name earthquakebeat.
-
-```
-make
+```yaml
+  period: 5m
 ```
 
-
-### Run
-
-To run Earthquakebeat with debugging output enabled, run:
-
-```
-./earthquakebeat -c earthquakebeat.yml -e -d "*"
-```
+Define the path to CA file which requires TLS call. One CA is provided in the repository. Feel free to use it.
 
 
-### Test
-
-To test Earthquakebeat, run the following command:
+## Run
 
 ```
-make testsuite
+./earthquakebeat -c earthquakebeat.yml -e 
 ```
 
-alternatively:
-```
-make unit-tests
-make system-tests
-make integration-tests
-make coverage-report
-```
+To debug run with `debug` flag enabled `./earthquakebeat -c earthquakebeat.yml -e -d "*"`
 
-The test coverage is reported in the folder `./build/coverage/`
+## Visualisations
+This is an example of visualisation for measurements.
 
-### Update
-
-Each beat has a template for the mapping in elasticsearch and a documentation for the fields
-which is automatically generated based on `fields.yml` by running the following command.
-
-```
-make update
-```
+![Map](docs/images/map01.png)
 
 
-### Cleanup
-
-To clean  Earthquakebeat source code, run the following command:
-
-```
-make fmt
-```
-
-To clean up the build directory and generated artifacts, run:
-
-```
-make clean
-```
-
-
-### Clone
-
-To clone Earthquakebeat from the git repository, run the following commands:
-
-```
-mkdir -p ${GOPATH}/src/github.com/radoondas/earthquakebeat
-git clone https://github.com/radoondas/earthquakebeat ${GOPATH}/src/github.com/radoondas/earthquakebeat
-```
-
-
-For further development, check out the [beat developer guide](https://www.elastic.co/guide/en/beats/libbeat/current/new-beat.html).
-
-
-## Packaging
-
-The beat frameworks provides tools to crosscompile and package your beat for different platforms. This requires [docker](https://www.docker.com/) and vendoring as described above. To build packages of your beat, run the following command:
-
-```
-make release
-```
-
-This will fetch and create all images required for the build process. The whole process to finish can take several minutes.
+## Build
+If you want to build Earthquakebeat from scratch, follow [build](BUILD.md) documentation.

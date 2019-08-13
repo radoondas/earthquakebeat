@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/radoondas/earthquakebeat.svg?branch=7.X)](https://travis-ci.org/radoondas/earthquakebeat)
+
 # Earthquakebeat
 
 Welcome to Earthquakebeat.

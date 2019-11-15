@@ -246,7 +246,7 @@ func (bt *Earthquakebeat) GetEarthquakes(b *beat.Beat, lastRun time.Time, CAFile
 	if res.StatusCode != 200 {
 		logp.NewLogger(selector).Debug("Status code: ", res.StatusCode)
 		logp.NewLogger(selector).Debug("Status code: ", res.Body)
-		return fmt.Errorf("HTTP %s", res), eqr
+		return fmt.Errorf("HTTP %+v", res), eqr
 	}
 
 	body, err := ioutil.ReadAll(res.Body)

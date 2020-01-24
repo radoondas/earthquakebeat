@@ -1,6 +1,6 @@
 package: github.com/radoondas/safecastbeat
 import:
   - package: github.com/elastic/beats
-    version: v7.5.1
+    version: v7.5.2
   - package: github.com/magefile/mage
     version: v1.8.0

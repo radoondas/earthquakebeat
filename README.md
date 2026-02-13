@@ -1,22 +1,24 @@
-[![Build Status](https://travis-ci.org/radoondas/earthquakebeat.svg?branch=master)](https://travis-ci.org/radoondas/earthquakebeat)
-
 # Earthquakebeat
 
 Welcome to Earthquakebeat.
 
-Earthquakebeat is a beat which periodically pulls data from [USGS earthquake API](https://earthquake.usgs.gov/fdsnws/event/1/). There are 2 api calls done eacr `Period` which request new and updated earthquakes. 
+Earthquakebeat is a beat which periodically pulls data from [USGS earthquake API](https://earthquake.usgs.gov/fdsnws/event/1/). There are 2 api calls done each `Period` which request new and updated earthquakes.
 
-`New` earthquakes call will request data in GeoJSON format and use attribute `starttime` set to `Now-Period`. That meas beat will pull data from past X Period of time you define.
-Example `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-08-13T09%3A18%3A18
-`   
+`New` earthquakes call will request data in GeoJSON format and use attribute `starttime` set to `Now-Period`. That means beat will pull data from past X Period of time you define.
+Example `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-08-13T09%3A18%3A18`
 
-`Updated ` earthquakes does the same, except is uses attribute `updatedafter` to pull last updated data. 
-Example: `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-08-13T09%3A18%3A18`
+`Updated` earthquakes does the same, except it uses attribute `updatedafter` to pull last updated data.
+Example: `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&updatedafter=2019-08-13T09%3A18%3A18`
 
 All other attributes are default and earthquakes from all over the world are being pulled.
 
-Note: Beat preserve earthquake original ID to not to duplicate data in index.
+Note: Beat preserves earthquake original ID to not duplicate data in index.
 
+## Compatibility
+
+- **Elasticsearch**: 9.x
+- **Go**: 1.24+
+- **Beats framework**: libbeat 9.3.0
 
 ## Installation
 Download and install appropriate package for your system. Check release [page](https://github.com/radoondas/earthquakebeat/releases) for latest packages.
@@ -32,13 +34,28 @@ To run Earthquakebeat you have to define `Period` for data pull. 5m should be su
   period: 5m
 ```
 
-Define the path to CA file which requires TLS call. One CA is provided in the repository. Feel free to use it.
+Optionally define the path to a CA file for TLS verification of the USGS API. If omitted, system CAs are used.
+
+```yaml
+  ssl:
+    cafile: ""
+```
+
+### Elasticsearch output
+
+Configure the output in `earthquakebeat.yml`:
+```yaml
+output.elasticsearch:
+  hosts: ["localhost:9200"]
+  username: "elastic"
+  password: "changeme"
+```
 
 
 ## Run
 
 ```
-./earthquakebeat -c earthquakebeat.yml -e 
+./earthquakebeat -c earthquakebeat.yml -e
 ```
 
 To debug run with `debug` flag enabled `./earthquakebeat -c earthquakebeat.yml -e -d "*"`

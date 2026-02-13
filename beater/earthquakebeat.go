@@ -5,24 +5,26 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"time"
 
-	"github.com/elastic/beats/libbeat/beat"
-	"github.com/elastic/beats/libbeat/common"
-	"github.com/elastic/beats/libbeat/logp"
+	"github.com/elastic/beats/v7/libbeat/beat"
+	"github.com/elastic/elastic-agent-libs/config"
+	"github.com/elastic/elastic-agent-libs/logp"
+	"github.com/elastic/elastic-agent-libs/mapstr"
 
-	"github.com/radoondas/earthquakebeat/config"
+	eqconfig "github.com/radoondas/earthquakebeat/config"
 )
 
 // Earthquakebeat configuration.
 type Earthquakebeat struct {
 	done   chan struct{}
-	config config.Config
+	config eqconfig.Config
 	client beat.Client
 }
 
@@ -39,7 +41,7 @@ type EarthquakeResponse struct {
 	Features []Feature
 }
 
-//https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
+// https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
 type Feature struct {
 	Type       string     `json:"type"`
 	Properties Properties `json:"properties"`
@@ -47,7 +49,7 @@ type Feature struct {
 	Id         string     `json:"id"`
 }
 
-//https://earthquake.usgs.gov/data/comcat/data-eventterms.php
+// https://earthquake.usgs.gov/data/comcat/data-eventterms.php
 type Properties struct {
 	Mag     float64 `json:"mag"`
 	Place   string  `json:"place"`
@@ -97,8 +99,8 @@ const (
 )
 
 // New creates an instance of earthquakebeat.
-func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
-	c := config.DefaultConfig
+func New(b *beat.Beat, cfg *config.C) (beat.Beater, error) {
+	c := eqconfig.DefaultConfig
 	if err := cfg.Unpack(&c); err != nil {
 		return nil, fmt.Errorf("error reading config file: %v", err)
 	}
@@ -194,21 +196,22 @@ func (bt *Earthquakebeat) GetEarthquakes(b *beat.Beat, lastRun time.Time, CAFile
 	now := time.Now().UTC()
 	eqr := EQResponse{tm: now, success: false}
 
-	tlsConfig := &tls.Config{RootCAs: x509.NewCertPool()}
-	transport := &http.Transport{TLSClientConfig: tlsConfig}
+	transport := &http.Transport{}
 	var ParsedUrl *url.URL
 
 	if CAFile != "" {
 		// Load our trusted certificate path
-		pemData, err := ioutil.ReadFile(CAFile)
+		pemData, err := os.ReadFile(CAFile)
 		if err != nil {
 			panic(err)
 		}
-		ok := tlsConfig.RootCAs.AppendCertsFromPEM(pemData)
+		rootCAs := x509.NewCertPool()
+		ok := rootCAs.AppendCertsFromPEM(pemData)
 		if !ok {
 			logp.NewLogger(selector).Error("Unable to load CA file")
 			panic("Couldn't load PEM data")
 		}
+		transport.TLSClientConfig = &tls.Config{RootCAs: rootCAs}
 	}
 
 	client := &http.Client{Transport: transport}
@@ -249,7 +252,7 @@ func (bt *Earthquakebeat) GetEarthquakes(b *beat.Beat, lastRun time.Time, CAFile
 		return fmt.Errorf("HTTP %+v", res), eqr
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	//logp.NewLogger(selector).Debug(body)
 	if err != nil {
 		log.Fatal(err)
@@ -277,11 +280,11 @@ func (bt *Earthquakebeat) GetEarthquakes(b *beat.Beat, lastRun time.Time, CAFile
 		for _, d := range transformedData {
 
 			event := beat.Event{
-				Meta: common.MapStr{
+				Meta: mapstr.M{
 					"id": d["id"].(string),
 				},
 				Timestamp: ts,
-				Fields: common.MapStr{
+				Fields: mapstr.M{
 					"type":       "earthquakebeat",
 					"earthquake": d,
 				},
@@ -304,14 +307,14 @@ func (bt *Earthquakebeat) GetEarthquakes(b *beat.Beat, lastRun time.Time, CAFile
 	return nil, eqr
 }
 
-func (bt *Earthquakebeat) TransformStationData(data EarthquakeResponse) []common.MapStr {
+func (bt *Earthquakebeat) TransformStationData(data EarthquakeResponse) []mapstr.M {
 
-	earthquakeData := []common.MapStr{}
+	earthquakeData := []mapstr.M{}
 
 	for _, f := range data.Features {
-		eq := common.MapStr{
+		eq := mapstr.M{
 			"id": f.Id,
-			"properties": common.MapStr{
+			"properties": mapstr.M{
 				"mag":     f.Properties.Mag,
 				"place":   f.Properties.Place,
 				"time":    strconv.FormatInt(f.Properties.Time, 10),
@@ -339,9 +342,9 @@ func (bt *Earthquakebeat) TransformStationData(data EarthquakeResponse) []common
 				"type":    f.Properties.Type,
 				"title":   f.Properties.Title,
 			},
-			"geometry": common.MapStr{
+			"geometry": mapstr.M{
 				"depth": f.Geometry.Coordinates[2],
-				"location": common.MapStr{
+				"location": mapstr.M{
 					"lat": f.Geometry.Coordinates[1],
 					"lon": f.Geometry.Coordinates[0],
 				},

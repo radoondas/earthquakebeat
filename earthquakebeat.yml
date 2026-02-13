@@ -1,3 +1,4 @@
+
 ################### Earthquakebeat Configuration Example #########################
 
 ############################# Earthquakebeat ######################################
@@ -6,9 +7,9 @@ earthquakebeat:
   # Defines how often an event is sent to the output
   period: 5m
 
-  # Defines SSL configuration.
+  # Defines SSL configuration. If cafile is empty, system CAs are used.
   ssl:
-    cafile: "/Users/rado/workspace/go/src/github.com/radoondas/safecastbeat/CA.pem"
+    cafile: ""
 
 #================================ General =====================================
 
@@ -141,8 +142,3 @@ processors:
 # that it is pointing to your Elasticsearch monitoring cluster, you can simply
 # uncomment the following line.
 #monitoring.elasticsearch:
-
-#================================= Migration ==================================
-
-# This allows to enable 6.7 migration aliases
-#migration.6_to_7.enabled: true

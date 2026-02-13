@@ -4,8 +4,8 @@ earthquakebeat:
   ssl:
     cafile: "/Users/rado/workspace/go/src/github.com/radoondas/safecastbeat/CA.pem"
 processors:
-- add_cloud_metadata: ~
-- add_docker_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
 
 output.elasticsearch:
   hosts: '${ELASTICSEARCH_HOSTS:elasticsearch:9200}'
